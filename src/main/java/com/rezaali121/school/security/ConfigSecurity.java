@@ -2,6 +2,7 @@ package com.rezaali121.school.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -56,10 +57,20 @@ public class ConfigSecurity extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity httpSecurity) throws Exception{
         httpSecurity.csrf().disable().cors().and()
                 .authorizeRequests()
+                .antMatchers("/connection").permitAll()
+                .antMatchers("/register").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/redact/**").hasAnyRole("USER" , "ADMIN","EDITOR")
-                .antMatchers("/**").hasAnyRole("USER" , "ADMIN","EDITOR")
-                .and().formLogin();
+                .antMatchers("/**").hasAnyRole("USER" , "ADMIN","EDITOR");
+                // removed form login to start developing JWT authentication
+                //.and().formLogin();
+    }
+
+    // TDOO check if you can solve the problem of Youtube-clone with this function
+    @Override
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 
     @Bean

@@ -3,10 +3,16 @@ package com.rezaali121.school.controller;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.rezaali121.school.dao.UserDao;
 import com.rezaali121.school.model.User;
+import com.rezaali121.school.security.JWTUtils;
+import com.rezaali121.school.security.MyUserDetails;
+import com.rezaali121.school.security.MyUserDetailsService;
 import com.rezaali121.school.view.UserView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -18,6 +24,40 @@ public class UserController {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private MyUserDetailsService myUserDetailsService;
+
+    @Autowired
+    private JWTUtils jwtUtils;
+
+    @GetMapping("/")
+    public String home(){
+        return "Server works !";
+    }
+
+    // added to handle the JWT authentication , dont forget to add /connection to the route athentication in ConfigSecurity
+    @PostMapping("/connection")
+    public ResponseEntity<String> connection(@RequestBody User user){
+
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            user.getEmail(), user.getPassword()
+                    )
+            );
+        }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        MyUserDetails userDetails =  (MyUserDetails) myUserDetailsService.loadUserByUsername(user.getEmail());
+
+        return new ResponseEntity<>(jwtUtils.generateJwt(userDetails), HttpStatus.OK);
+
+    }
 
     @GetMapping("/users")
     @JsonView(UserView.class)
