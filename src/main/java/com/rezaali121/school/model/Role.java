@@ -11,7 +11,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-
+// ================= Manage by role list many to many ================ we do not need this class in last method
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Getter
@@ -24,7 +24,9 @@ public class Role {
     @JsonView({UserView.class , ModuleView.class})
     private String name;
 
-    @ManyToMany(mappedBy = "roleList")
-    @JsonView( RoleView.class) // in this way we are asking to show the user info only when I am asking for module info not when I am getting user info
-    private Set<User> userList = new HashSet<>();
+
+
+//    @ManyToMany(mappedBy = "roleList")
+//    @JsonView( RoleView.class) // in this way we are asking to show the user info only when I am asking for module info not when I am getting user info
+//    private Set<User> userList = new HashSet<>();
 }

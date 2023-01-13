@@ -1,5 +1,6 @@
 package com.rezaali121.school.security;
 
+import com.rezaali121.school.model.Administrator;
 import com.rezaali121.school.model.Role;
 import com.rezaali121.school.model.User;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,14 +22,31 @@ public class MyUserDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
         Collection<GrantedAuthority> authoritiesList = new ArrayList<>();
-        for(Role role : this.user.getRoleList()){
+
+
+        // ================= Manage by Administrator inheriting User ================//
+
+        if(this.user instanceof Administrator){
             authoritiesList.add(
-                    new SimpleGrantedAuthority(role.getName())
+                    new SimpleGrantedAuthority("ROLE_ADMIN")
             );
         }
+
         authoritiesList.add(
                 new SimpleGrantedAuthority("ROLE_USER")
         );
+
+        // ================= Manage by role list many to many ====================//
+
+//
+//        for(Role role : this.user.getRoleList()){
+//            authoritiesList.add(
+//                    new SimpleGrantedAuthority(role.getName())
+//            );
+//        }
+//        authoritiesList.add(
+//                new SimpleGrantedAuthority("ROLE_USER")
+//        );
 
 
         // ------------------ developed with Many To One getRole() and with just one boolean isAdmin

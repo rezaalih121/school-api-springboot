@@ -31,4 +31,7 @@ public class Module {
     @JsonView( ModuleView.class) // in this way we are asking to show the user info only when I am asking for module info not when I am getting user info
     private Set<User> userList = new HashSet<>();
 
+
+    @ManyToOne
+    Administrator referent;
 }

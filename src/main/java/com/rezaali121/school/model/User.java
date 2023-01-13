@@ -18,6 +18,7 @@ import java.util.Set;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,22 +31,25 @@ public class User {
     private String password;
 
     /*
+    // ================= Manage by admin boolean ==============
      @ManyToOne
     @JsonView({UserView.class}) // when we get a module we dont need to get the roles because it is already there
     private Role role;
     @JsonView({UserView.class , ModuleView.class})
     private boolean admin;
     */
-
+// ================= Manage by role list many to many ==============
     // fetch by default is lazy that means it will not load the many to many data but here we changed it and now it will load all roles
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    @JsonView(UserView.class)
-    private Set<Role> roleList = new HashSet<>();
+
+//
+//    @ManyToMany(fetch = FetchType.EAGER)
+//    @JoinTable(
+//            name = "user_role",
+//            joinColumns = @JoinColumn(name = "user_id"),
+//            inverseJoinColumns = @JoinColumn(name = "role_id")
+//    )
+//    @JsonView(UserView.class)
+//    private Set<Role> roleList = new HashSet<>();
     @ManyToMany
     @JoinTable(
             name = "user_module",

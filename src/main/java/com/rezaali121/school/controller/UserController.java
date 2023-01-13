@@ -13,9 +13,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,9 +37,13 @@ public class UserController {
     @Autowired
     private JWTUtils jwtUtils;
 
+    @Autowired
+    private PasswordEncoder encoder;
+
     @GetMapping("/")
     public String home(){
         return "Server works !";
+
     }
 
     // added to handle the JWT authentication , dont forget to add /connection to the route athentication in ConfigSecurity
@@ -91,6 +98,8 @@ public class UserController {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
             // the user exists and we just update the existed user
+            // this is to prevent the user to change password here we will handle change password separately
+            user.setPassword(userDatabase.get().getPassword());
             userDao.save(user);
 
             return new ResponseEntity<>(HttpStatus.OK);
@@ -99,6 +108,8 @@ public class UserController {
 
 
         // user does not exist creating a new user
+        // password encryption added here
+        user.setPassword(encoder.encode(user.getPassword()));
         userDao.save(user);
         return new ResponseEntity<>(HttpStatus.CREATED);
 
