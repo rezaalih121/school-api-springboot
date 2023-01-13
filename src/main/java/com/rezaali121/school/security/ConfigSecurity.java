@@ -11,6 +11,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 import javax.sql.DataSource;
 import java.util.Date;
@@ -24,6 +26,9 @@ public class ConfigSecurity extends WebSecurityConfigurerAdapter {
     // comes from MyUserDetailsService
     @Autowired
     private MyUserDetailsService myUserDetailsService;
+
+    @Autowired
+    private JwtRequestFilter jwtRequestFilter;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -55,7 +60,8 @@ public class ConfigSecurity extends WebSecurityConfigurerAdapter {
     }
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception{
-        httpSecurity.csrf().disable().cors().and()
+        httpSecurity.csrf().disable().cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues())
+                .and()
                 .authorizeRequests()
                 .antMatchers("/connection").permitAll()
                 .antMatchers("/register").permitAll()
@@ -64,6 +70,8 @@ public class ConfigSecurity extends WebSecurityConfigurerAdapter {
                 .antMatchers("/**").hasAnyRole("USER" , "ADMIN","EDITOR");
                 // removed form login to start developing JWT authentication
                 //.and().formLogin();
+
+        httpSecurity.addFilterBefore(jwtRequestFilter , UsernamePasswordAuthenticationFilter.class);
     }
 
     // TDOO check if you can solve the problem of Youtube-clone with this function

@@ -20,7 +20,7 @@ public class JWTUtils {
     public Claims extractBody(String jwt){
         return Jwts.parser()
                 .setSigningKey(secret)
-                .parseClaimsJwt(jwt)
+                .parseClaimsJws(jwt)
                 .getBody();
 
     }

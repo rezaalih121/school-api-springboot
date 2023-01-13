@@ -111,6 +111,6 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         userDao.deleteById(id);
-        return new ResponseEntity<>(userDatabase.get(),HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
